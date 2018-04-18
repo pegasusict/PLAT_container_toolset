@@ -1,27 +1,40 @@
 #!/bin/bash
-################################################################################
-## Pegasus' Linux Administration Tools                             VER0.6BETA ##
-## (C)2017 Mattijs Snepvangers                          pegasus.ict@gmail.com ##
-## container_builder.sh        container builder                   VER0.6BETA ##
-## License: GPL v3                         Please keep my name in the credits ##
-################################################################################
-
+############################################################################
+# Pegasus' Linux Administration Tools #					postinstall script #
+# (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
+# License: GPL v3					  # Please keep my name in the credits #
+############################################################################
+START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 # Making sure this script is run by bash to prevent mishaps
-if [ "$(ps -p "$$" -o comm=)" != "bash" ]; then
-    bash "$0" "$@"
-    exit "$?"
-fi
+if [ "$(ps -p "$$" -o comm=)" != "bash" ]; then bash "$0" "$@" ; exit "$?" ; fi
 # Make sure only root can run this script
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
-# define constants
-declare -r TRUE=0
-declare -r FALSE=1
-################################################################################
+if [[ $EUID -ne 0 ]]; then echo "This script must be run as root" ; exit 1 ; fi
+echo "$START_TIME ## Starting Container Tool Set Process #######################"
+### FUNCTIONS ###
+init() {
+	################### PROGRAM INFO ##########################################
+	declare -gr PROGRAM_SUITE="Pegasus' Linux Administration Tools"
+	declare -gr SCRIPT="${0##*/}" ###CHECK###
+	declare -gr SCRIPT_TITLE="Container Tool Set"
+	declare -gr MAINTAINER="Mattijs Snepvangers"
+	declare -gr MAINTAINER_EMAIL="pegasus.ict@gmail.com"
+	declare -gr COPYRIGHT="(c)2017-$(date +"%Y")"
+	declare -gr VERSION_MAJOR=0
+	declare -gr VERSION_MINOR=0
+	declare -gr VERSION_PATCH=25
+	declare -gr VERSION_STATE="PRE-ALPHA"
+	declare -gr VERSION_BUILD=20180418
+	declare -gr LICENSE="MIT"
+	###########################################################################
+	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
+	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
+	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
+	### set default values ####################################################
+	VERBOSITY=3	;	TMP_AGE=2	;	GARBAGE_AGE=7	;	LOG_AGE=30
+	LOG_DIR="/var/log/plat"		;	LOG_FILE="$LOGDIR/ContainerToolSet_$START_TIME.log"
+}
+###############################################################################
 _now=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
-PLAT_LOGFILE="/var/log/plat/ContainerBuilder_$_now.log"
 mkdir '/var/log/plat'
 touch $PLAT_LOGFILE
 echo "################################################################################" 2>&1 | tee -a $PLAT_LOGFILE
