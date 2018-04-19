@@ -7,26 +7,26 @@
 
 #########################################################
 # PROGRAM_SUITE="Pegasus' Linux Administration Tools"	#
-# SCRIPT_TITLE="PostInstall Functions Library"			#
+# SCRIPT_TITLE="Contaienr Tool Set Functions Library"	#
 # MAINTAINER="Mattijs Snepvangers"						#
 # MAINTAINER_EMAIL="pegasus.ict@gmail.com"				#
 # VERSION_MAJOR=0										#
 # VERSION_MINOR=1										#
-# VERSION_PATCH=28										#
-# VERSION_STATE="ALPHA"									#
+# VERSION_PATCH=31										#
+# VERSION_STATE="PRE-ALPHA"								#
 # VERSION_BUILD=20180419								#
 #########################################################
 
 ### Basic program #############################################################
-get_args() {
+get_args() { ### postinstall version as example
 	getopt --test > /dev/null
 	if [[ $? -ne 4 ]]
 	then
 		err_line "I’m sorry, \"getopt --test\" failed in this environment."
 		exit 1
 	fi
-	OPTIONS="hv:r:c:g:l:t:S:P:R:"
-	LONG_OPTIONS="help,verbosity:,role:,containertype:garbageage:logage:tmpage:"
+	OPTIONS="hn:c:v:"
+	LONG_OPTIONS="help,name:,containertype:,verbosity:"
 	PARSED=$(getopt -o $OPTIONS --long $LONG_OPTIONS -n "$0" -- "$@")
 	if [ $? -ne 0 ]
 		then usage
@@ -36,15 +36,29 @@ get_args() {
 		case "$1" in
 			-h|--help			)	usage				;	shift	;;
 			-v|--verbosity		)	set_verbosity $2	;	shift 2	;;
-			-r|--role			)	check_role $2		; shift 2	;;
+			-n|--name			)	check_name $2		;	shift 2	;;
 			-c|--containertype	)	check_container $2	;	shift 2	;;
-			-g|--garbageage		)	GARBAGE_AGE=$2		;	shift 2	;;
-			-l|--logage			)	LOG_AGE=$2			;	shift 2	;;
-			-t|--tmpage			)	TMP_AGE=$2			;	shift 2	;;
 			--					)	shift				;	break	;;
 			*					)	break							;;
 		esac
 	done
+}
+
+usage() {
+	version
+	cat <<-EOT
+		USAGE:
+
+		OPTIONS
+
+		    -n or --name tells the script what name the container needs to have.
+		       Valid options: max 63 chars: -, a-z, A-Z, 0-9
+		                      name may not start or end with a dash "-"
+		                      name may not start with a digit "0-9"
+		    -c or --containertype tells the script what kind of container we are working on.
+		       Valid options are: basic, nas, web, x11, pxe
+		EOT
+	exit 3
 }
 
 build_maintenance_script() { ###TODO### convert to template
@@ -123,7 +137,7 @@ build_maintenance_script() { ###TODO### convert to template
 }
 
 check_container() {
-	_CONTAINER=$1
+	local _CONTAINER=$1
 	case "$_CONTAINER" in
 		"nas"		)	SYSTEMROLE_NAS=true		;	dbg_line "container=nas"	;;
 		"web"		)	SYSTEMROLE_NAS=true		;
@@ -137,44 +151,17 @@ check_container() {
 	esac;
 }
 
-check_role() {
-	_ROLE=$1
-	case "$_ROLE" in
-		"ws"			)	SYSTEMROLE_WS=true			;	dbg_line "role=ws"			;;
-		"poseidon"		)	SYSTEMROLE_WS=true			;
-							SYSTEMROLE_SERVER=true		;
-							SYSTEMROLE_LXCHOST=true		;
-							SYSTEMROLE_POSEIDON=true	;
-							SYSTEMROLE_NAS=true			;	dbg_line "role=poseidon"	;;
-		"mainserver"	)	SYSTEMROLE_SERVER=true		;
-							SYSTEMROLE_MAINSERVER=true	;
-							SYSTEMROLE_LXCHOST=true		;	dbg_line "role=mainserver"	;;
-		"container"		)	SYSTEMROLE_SERVER=true		;
-							SYSTEMROLE_CONTAINER=true	;	dbg_line "role=container"	;;
-		*				)	critline "CRITICAL: Unknown systemrole $ROLE, exiting..."	;	exit 1;;
-	esac
-}
-
-usage() {
-	version
-	cat <<-EOT
-		USAGE: sudo bash $SCRIPT -h
-		         or
-		       sudo bash $SCRIPT -r <systemrole> [ -c <containertype> ] [ -v INT ] [ -g <garbageage> ] [ -l <logage> ] [ -t <tmpage> ]
-
-		OPTIONS
-
-		   -r or --role tells the script what kind of system we are dealing with.
-		         Valid options: ws, poseidon, mainserver, container << REQUIRED >>
-		   -c or --containertype tells the script what kind of container we are working on.
-		         Valid options are: basic, nas, web, x11, pxe, router << REQUIRED if -r=container >>
-		   -v or --verbosity defines the amount of chatter. 0=CRITICAL, 1=WARNING, 2=INFO, 3=VERBOSE, 4=DEBUG. default=2
-		   -g or --garbageage defines the age (in days) of garbage (trashbins & temp files) being cleaned, default=7
-		   -l or --logage defines the age (in days) of logs to be purged, default=30
-		   -t or --tmpage define how long temp files should be untouched before they are deleted, default=2
-		   -h or --help prints this message
-
-		  The options can be used in any order
-	EOT
-	exit 3
+check_name() {
+	local _CONTAINER_NAME="$1"
+	local _FILTERED_NAME=$(echo "$_CONTAINER_NAME" | grep -Po "^[a-zA-Z][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]$")
+	if [ $_FILTERED_NAME != $_CONTAINER_NAME ]
+	then
+		cat <<-EOT
+			I'm sorry, the name you proposed is invalid, please enter a valid name:
+			    > max 63 chars: -, a-z, A-Z, 0-9
+			    > name may not start or end with a dash "-"
+			    > name may not start with a digit "0-9""
+			EOT
+	  exit 1
+	else declare -gr CONTAINER_NAME=$_CONTAINER_NAME
 }
