@@ -38,8 +38,8 @@ _now=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 mkdir '/var/log/plat'
 touch $PLAT_LOGFILE
 echo "################################################################################" 2>&1 | tee -a $PLAT_LOGFILE
-echo "## Pegasus' Linux Administration Tools - Container Builder           V1.0Beta ##" 2>&1 | tee -a $PLAT_LOGFILE
-echo "## (c) 2017 Mattijs Snepvangers    build 20180226       pegasus.ict@gmail.com ##" 2>&1 | tee -a $PLAT_LOGFILE
+echo "## Pegasus' Linux Administration Tools - Container Builder		   V1.0Beta ##" 2>&1 | tee -a $PLAT_LOGFILE
+echo "## (c) 2017 Mattijs Snepvangers	build 20180226	   pegasus.ict@gmail.com ##" 2>&1 | tee -a $PLAT_LOGFILE
 echo "################################################################################" 2>&1 | tee -a $PLAT_LOGFILE
 echo "" 2>&1 | tee -a $PLAT_LOGFILE
 source lib/default.inc.bash
