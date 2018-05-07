@@ -2,7 +2,7 @@
 ############################################################################
 # Pegasus' Linux Administration Tools #					Container Tool Set #
 # (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
-# License: GPL v3					  # Please keep my name in the credits #
+# License: MIT						  # Please keep my name in the credits #
 ############################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 # Making sure this script is run by bash to prevent mishaps
@@ -36,12 +36,12 @@ init() {
 ###############################################################################
 _now=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 mkdir '/var/log/plat'
-touch $PLAT_LOGFILE
-echo "################################################################################" 2>&1 | tee -a $PLAT_LOGFILE
-echo "## Pegasus' Linux Administration Tools - Container Builder		   V1.0Beta ##" 2>&1 | tee -a $PLAT_LOGFILE
-echo "## (c) 2017 Mattijs Snepvangers	build 20180226	   pegasus.ict@gmail.com ##" 2>&1 | tee -a $PLAT_LOGFILE
-echo "################################################################################" 2>&1 | tee -a $PLAT_LOGFILE
-echo "" 2>&1 | tee -a $PLAT_LOGFILE
+touch $PLAT_LOG_FILE
+echo "################################################################################" 2>&1 | tee -a $PLAT_LOG_FILE
+echo "## Pegasus' Linux Administration Tools - Container Builder		   V1.0Beta ##" 2>&1 | tee -a $PLAT_LOG_FILE
+echo "## (c) 2017 Mattijs Snepvangers	build 20180226	   pegasus.ict@gmail.com ##" 2>&1 | tee -a $PLAT_LOG_FILE
+echo "################################################################################" 2>&1 | tee -a $PLAT_LOG_FILE
+echo "" 2>&1 | tee -a $PLAT_LOG_FILE
 source lib/default.inc.bash
 
 
