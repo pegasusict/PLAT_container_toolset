@@ -12,14 +12,14 @@
 # MAINTAINER_EMAIL="pegasus.ict@gmail.com"				#
 # VERSION_MAJOR=0										#
 # VERSION_MINOR=1										#
-# VERSION_PATCH=31										#
+# VERSION_PATCH=41										#
 # VERSION_STATE="PRE-ALPHA"								#
-# VERSION_BUILD=20180419								#
+# VERSION_BUILD=20180525								#
 # LICENSE="MIT"											#
 #########################################################
 
 ### Basic program #############################################################
-get_args() { ### postinstall version as example
+get_args() {
 	getopt --test > /dev/null
 	if [[ $? -ne 4 ]]
 	then
@@ -57,7 +57,7 @@ usage() {
 		                      name may not start or end with a dash "-"
 		                      name may not start with a digit "0-9"
 		    -c or --containertype tells the script what kind of container we are working on.
-		       Valid options are: basic, nas, web, x11, pxe
+		       Valid options are: basic, nas, web, x11, pxe, basic, router, honeypot
 		EOT
 	exit 3
 }
@@ -65,12 +65,7 @@ usage() {
 build_maintenance_script() { ###TODO### convert to template
 	local _SCRIPT=$1
 	local _SCRIPT_INI="${_SCRIPT%.*}.ini"
-	if [[ "$_SCRIPT" == "$MAINTENANCE_SCRIPT" ]]
-	then
-		local _SCRIPT_TITLE="$MAINTENANCE_SCRIPT_TITLE"
-	else
-		local _SCRIPT_TITLE="$CONTAINER_SCRIPT_TITLE"
-	fi
+	local _SCRIPT_TITLE="$CONTAINER_SCRIPT_TITLE"
 	if [ -f "$_SCRIPT" ]
 	then
 		rm "$_SCRIPT" 2>&1 | dbg_line
@@ -119,36 +114,21 @@ build_maintenance_script() { ###TODO### convert to template
 	add_to_script "$_SCRIPT_INI" line "GARBAGE_AGE=$GARBAGE_AGE"
 	add_to_script "$_SCRIPT_INI" line "LOG_AGE=$LOG_AGE"
 	add_to_script "$_SCRIPT_INI" line "TMP_AGE=$TMP_AGE"
-	if [[ $SYSTEMROLE_CONTAINER == false ]]
-	then
-		if [[ $_SCRIPT == $MAINTENANCE_SCRIPT ]]
-		then
-			if [[ $SYSTEMROLE_LXCHOST == true ]]
-			then
-				sed -e 1d maintenance/body-lxchost0.sh >> "$_SCRIPT"
-				if [[ $SYSTEMROLE_MAINSERVER == true ]]
-				then
-					sed -e 1d maintenance/backup2tape.sh >> "$_SCRIPT"
-				fi
-				sed -e 1d maintenance/body-lxchost1.sh >> "$_SCRIPT"
-			fi
-		fi
-	fi
+
 	sed -e 1d maintenance/body-basic.sh >> "$_SCRIPT"
 }
 
 check_container() {
 	local _CONTAINER=$1
 	case "$_CONTAINER" in
-		"nas"		)	SYSTEMROLE_NAS=true		;	dbg_line "container=nas"	;;
-		"web"		)	SYSTEMROLE_NAS=true		;
-						SYSTEMROLE_WEB=true		;	dbg_line "container=web"	;;
-		"x11"		)	SYSTEMROLE_WS=true		;	dbg_line "container=x11"	;;
-		"pxe"		)	SYSTEMROLE_NAS=true		;
-						SYSTEMROLE_PXE=true		;	dbg_line "container=pxe"	;;
-		"basic"		)	SYSTEMROLE_BASIC=true	;	dbg_line "container=basic"	;;
-		"router"	)	SYSTEMROLE_ROUTER=true	;	dbg_line "container=router"	;;
-		*			)	crit_line "CRITICAL: Unknown containertype $CONTAINER, exiting..."	;	exit 1	;;
+		"nas"		)	SYSTEM_ROLE[NAS]=true		;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=nas"		;;
+		"web"		)	SYSTEM_ROLE[NAS]=true		;	SYSTEM_ROLE[SERVER]=true	;	SYSTEM_ROLE[WEB]=true	;	dbg_line "container=web"		;;
+		"x11"		)	SYSTEM_ROLE[WS]=true		;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=x11"		;;
+		"pxe"		)	SYSTEM_ROLE[NAS]=true		;	SYSTEM_ROLE[SERVER]=true	;	SYSTEM_ROLE[PXE]=true	;	dbg_line "container=pxe"		;;
+		"basic"		)	SYSTEM_ROLE[BASIC]=true																	;	dbg_line "container=basic"		;;
+		"router"	)	SYSTEM_ROLE[ROUTER]=true	;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=router"		;;
+		"honeypot"	)	SYSTEM_ROLE[HONEY]=true		;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=honeypot"	;;
+		*			)	crit_line "CRITICAL: Unknown containertype $_CONTAINER, exiting..."	;	exit 1	;;
 	esac;
 }
 
@@ -165,4 +145,49 @@ check_name() {
 			EOT
 	  exit 1
 	else declare -gr CONTAINER_NAME=$_CONTAINER_NAME
+}
+
+create_container() {
+	local _CONTAINER_NAME="$1"
+	local _START_CONTAINER=$2
+	local _CONTAINER_DISTRIBUTION="$3"
+	local _CONTAINER_VERSION="$4"
+	local _COMMAND=""
+	if [ "$_START_CONTAINER"=true ]
+	then
+		lxc launch "$_COMMAND"
+	else
+		lxc init 
+	fi
+	# "$CONTAINER_DISTRIBUTION":"$CONTAINER_VERSION" "$CONTAINER_NAME"
+}
+
+start_container() {
+	_CONTAINER_NAME=$1
+	lxc start $_CONTAINER_NAME
+}
+
+stop_container() {
+	_CONTAINER_NAME=$1
+	lxc stop $_CONTAINER_NAME
+}
+
+list_containers() {
+	lxc list
+}
+
+run_post_install() {
+	echo nothing here yet
+}
+
+run_in_container() {
+	_COMMAND="$1"
+	_CONTAINER_NAME="$2"
+	lxc exec $_CONTAINER_NAME -- $_COMMAND | dbg_line
+}
+
+put_in_container() {
+	local _FILE="$1"
+	local _CONTAINER="$2"
+	cp "_FILE" "$LXC_ROOT$_CONTAINER"
 }
