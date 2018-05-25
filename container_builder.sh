@@ -34,7 +34,7 @@ init() {
 
 prep() {
 	### VARS ###
-	declare -g CONTAINERNAME=""
+	declare -g CONTAINER_NAME=""
 	declare -Ag SYSTEM_ROLE(
 		[BASIC]=false
 		[WS]=false
@@ -45,12 +45,19 @@ prep() {
 		[X11]=false
 		[HONEY]=false
 	)
+	
 	### INCLUDES ###
 	source ../PBFL/default.inc.bash
+	
+	### LOAD PREFS ###
+	parse_ini
+	parse_args $@
+	compile_prefs
+	update _ini
 }
 
 main() {
-	CONTAINERNAME=$(prompt "What should the container be named?")
+	CONTAINER_NAME=$(prompt "What should the container be named?")
 	#if [ $(choose "Do you want a specific version?") ]
 	echo possible roles:
 	for ROLE in SYSTEM_ROLE
@@ -59,6 +66,12 @@ main() {
 	done 
 	CHOSEN_ROLES=$(prompt "what roles should the container perform?")
 
-	
-	create_container $CONTAINERNAME true
-	put_in_container "/etc/plat/*" $CONTAINERNAME
+	create_container $CONTAINER_NAME true
+	put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME/etc/plat/"
+	lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
+}
+
+### boilerplate ###
+init
+prep $@
+main
