@@ -32,6 +32,7 @@ init() {
 	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
 
 }
+
 prep() {
 	declare -Ag SYSTEM_ROLE(
 		[BASIC]=false
@@ -43,24 +44,60 @@ prep() {
 		[X11]=false
 	)
 
+
+###
+	get_args $@
 }
-###############################################################################
-_now=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
-mkdir '/var/log/plat'
-touch $PLAT_LOG_FILE
-echo "################################################################################" 2>&1 | tee -a $PLAT_LOG_FILE
-echo "## Pegasus' Linux Administration Tools - Container Builder		   V1.0Beta ##" 2>&1 | tee -a $PLAT_LOG_FILE
-echo "## (c) 2017 Mattijs Snepvangers	build 20180226	   pegasus.ict@gmail.com ##" 2>&1 | tee -a $PLAT_LOG_FILE
-echo "################################################################################" 2>&1 | tee -a $PLAT_LOG_FILE
-echo "" 2>&1 | tee -a $PLAT_LOG_FILE
-source ../PBFL/default.inc.bash
+
+get_args() {
+	getopt --test > /dev/null
+	if [[ $? -ne 4 ]]
+	then
+		err_line "I’m sorry, \"getopt --test\" failed in this environment."
+		exit 1
+	fi
+	OPTIONS="hn:c:v:"
+	LONG_OPTIONS="help,name:,containertype:,verbosity:"
+	PARSED=$(getopt -o $OPTIONS --long $LONG_OPTIONS -n "$0" -- "$@")
+	if [ $? -ne 0 ]
+		then usage
+	fi
+	eval set -- "$PARSED"
+	while true; do
+		case "$1" in
+			-h|--help			)	usage				;	shift	;;
+			-v|--verbosity		)	set_verbosity $2	;	shift 2	;;
+			-n|--name			)	check_name $2		;	shift 2	;;
+			-c|--containertype	)	check_container $2	;	shift 2	;;
+			--					)	shift				;	break	;;
+			*					)	break							;;
+		esac
+	done
+}
+
+usage() {
+	version
+	cat <<-EOT
+		USAGE:
+
+		OPTIONS
+
+		    -n or --name tells the script what name the container needs to have.
+		       Valid options: max 63 chars: -, a-z, A-Z, 0-9
+		                      name may not start or end with a dash "-"
+		                      name may not start with a digit "0-9"
+		    -c or --containertype tells the script what kind of container we are working on.
+		       Valid options are: basic, nas, web, x11, pxe, basic, router, honeypot
+		EOT
+	exit 3
+}
+
+main() {
+	
+}
 
 
-################################################################################
-getargs $@
-
-print $systemrole
-
-
-### send email with log attached
-/etc/plat/mail.sh
+#### BOILERPLATE ####
+init
+prep $@
+main
