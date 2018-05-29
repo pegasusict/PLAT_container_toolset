@@ -35,7 +35,7 @@ init() {
 prep() {
 	### VARS ###
 	declare -g CONTAINER_NAME=""
-	declare -Ag SYSTEM_ROLE(
+	declare -Ag SYSTEM_ROLE=(
 		[BASIC]=false
 		[WS]=false
 		[SERVER]=false
