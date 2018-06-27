@@ -46,7 +46,7 @@ prep() {
 
 
 ###
-	get_args $@
+	get_args
 }
 
 get_args() {
@@ -93,11 +93,11 @@ usage() {
 }
 
 main() {
-	
+
 }
 
 
 #### BOILERPLATE ####
 init
-prep $@
+prep
 main

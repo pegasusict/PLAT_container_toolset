@@ -44,19 +44,58 @@ prep() {
 	#update _ini
 }
 
-main() {
-	CONTAINER_NAME=$(prompt "What should the container be named?")
-	#if [ $(choose "Do you want a specific version?") ]
-	echo possible roles:
-	for ROLE in SYSTEM_ROLE
-	do
-		echo -e "$SYSTEM_ROLE[ROLE]\n"
-	done
-	CHOSEN_ROLES=$(prompt "what role(s) should the container perform?")
+# fun: build_farm
+# txt: Setup an LXC vm farm quickly by creating VMs:
+#      a) Attach bridge to vm
+#      b) Assign an IPv4 address
+#      c) Start VM
+#      d) Mark VM as autostart on host reboot
+# use:
+# opt: VMs: space seperated list of names for the virtual machines
+# api: lxc
+build_farm() {
+	_debug="" # either echo or ""
+	_lxc="lxc"
+	vm_arch='amd64'
+	vm_bridge='br0'  # Your bridge interface
+	vm_net_if='eth0'    # VM interface
+	vm_start_ip='10.52.230' # Vm subnet 10.114.13.xx/24
+	vm_first_ip=220           # First vm IP address 10.114.13.3 and so on
+	## Customize this ##
+	## Format:
+	## vm_os/vm_version/vm_arch|vm-name
+	vm_os=ubuntu
+	vm_release=bionic
+	declare -a vm_names=(theo, dominique, stefan, roelof)
 
-	create_container $CONTAINER_NAME true
-	put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME" "etc/plat/"
-	lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
+	echo "Setting up LXD based VM lab...Please wait..."
+	for v in $vm_names
+	do
+			# Get vm_os and vm_name
+			IFS='|'
+			set -- $v
+			echo "* Creating ${2%%-*} vm...."
+			# failsafe
+		$_debug $_lxc info "$2" &>/dev/null && continue
+			# Create vm
+			$_debug $_lxc init "images:${1}" "$2"
+			# Config networking for vm
+			$_debug $_lxc network attach "$vm_bridge" "$2" "$vm_net_if"
+			$_debug $_lxc config device set "$2" "$vm_net_if" ipv4.address "${vm_start_ip}.${vm_first_ip}"
+			# Start vm
+			$_debug $_lxc start "$2"
+			$_debug $_lxc config set "$2" boot.autostart true
+			# Increase an IP address counter
+			(( vm_first_ip++ ))
+	done
+	echo "-------------------------------------------"
+	echo '* VM Summary'
+	echo "-------------------------------------------"
+	$_lxc list
+
+
+		put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME" "etc/plat/"
+		lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
 }
 
 get_args() {
