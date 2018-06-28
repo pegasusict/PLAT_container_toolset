@@ -9,14 +9,14 @@ source ../lib/subheader.sh
 echo "$START_TIME ## Starting PostInstall Process #######################"
 ### FUNCTIONS ###
 init() {
-	################### PROGRAM INFO ##############################################
+	################### PROGRAM INFO ###########################################
 	declare -gr SCRIPT_TITLE="Container Build Script"
 	declare -gr VERSION_MAJOR=0
 	declare -gr VERSION_MINOR=1
-	declare -gr VERSION_PATCH=0
+	declare -gr VERSION_PATCH=2
 	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180626
-	###############################################################################
+	declare -gr VERSION_BUILD=20180628
+	############################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
 	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
 	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
@@ -26,15 +26,15 @@ prep() {
 	### VARS ###
 	declare -g CONTAINER_NAME	;	CONTAINER_NAME=""
 	declare -Ag SYSTEM_ROLE=(
-		[BASIC]=false
-		[WS]=false
-		[SERVER]=false
-		[NAS]=false
-		[WEB]=false
-		[PXE]=false
-		[X11]=false
-		[HONEY]=false
-	)
+							[BASIC]=false
+							[WS]=false
+							[SERVER]=false
+							[NAS]=false
+							[WEB]=false
+							[PXE]=false
+							[X11]=false
+							[HONEY]=false
+							)
 	### INCLUDES ###
 	source ../PBFL/default.inc.bash
 	### LOAD PREFS ###
@@ -54,49 +54,55 @@ prep() {
 # opt: VMs: space seperated list of names for the virtual machines
 # api: lxc
 build_farm() {
-	_debug="" # either echo or ""
-	_lxc="lxc"
-	vm_arch='amd64'
-	vm_bridge='br0'  # Your bridge interface
-	vm_net_if='eth0'    # VM interface
-	vm_start_ip='10.52.230' # Vm subnet 10.114.13.xx/24
-	vm_first_ip=220           # First vm IP address 10.114.13.3 and so on
+	local _LXC			;	_LXC="lxc"
+	local _VM_ARCH		;	_VM_ARCH='amd64'
+	local _VM_BRIDGE	;	_VM_BRIDGE='br0'
+	local _VM_NET_IF	;	_VM_NET_IF='eth0'
+	local _VM_START_IP	;	_VM_START_IP='192.168.49'
+	local _VM_FIRST_IP	;	_VM_FIRST_IP=220
+	local _NETCFG
 	## Customize this ##
 	## Format:
-	## vm_os/vm_version/vm_arch|vm-name
-	vm_os=ubuntu
-	vm_release=bionic
-	declare -a vm_names=(theo, dominique, stefan, roelof)
+	## VM_OS/VM_VERSION/VM_ARCH|VM-NAME
+	local _VM_OS		;	_VM_OS=ubuntu
+	local _VM_VERSION	;	_VM_VERSION=bionic
+	local -a _VM_NAMES=("$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|theo,
+						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|dominique,
+						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|stefan,
+						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|roelof)
 
 	echo "Setting up LXD based VM lab...Please wait..."
 	for v in $vm_names
 	do
-			# Get vm_os and vm_name
-			IFS='|'
-			set -- $v
-			echo "* Creating ${2%%-*} vm...."
-			# failsafe
-		$_debug $_lxc info "$2" &>/dev/null && continue
-			# Create vm
-			$_debug $_lxc init "images:${1}" "$2"
-			# Config networking for vm
-			$_debug $_lxc network attach "$vm_bridge" "$2" "$vm_net_if"
-			$_debug $_lxc config device set "$2" "$vm_net_if" ipv4.address "${vm_start_ip}.${vm_first_ip}"
-			# Start vm
-			$_debug $_lxc start "$2"
-			$_debug $_lxc config set "$2" boot.autostart true
-			# Increase an IP address counter
-			(( vm_first_ip++ ))
+		# Get VM_OS and VM_NAME
+		IFS='|'
+		set -- $v
+		echo "* Creating ${2%%-*} vm...."
+		# failsafe
+		$_LXC info "$2" &>/dev/null && continue
+		# Create vm
+		$_LXC init "images:${1}" "$2"
+		# Config networking for vm
+		# Start vm
+		$_LXC start "$2"
+		_NETCFG="auto $_VM_NET_IF\n
+		iface $_VM_NET_IF inet static\n
+		address $_VM_START_IP.$_VM_FIRST_IP\n	netmask 255.255.255.0\n
+		network $_VM_START_IP.0\n	broadcast $_VM_START_IP.255\n
+		gateway $_VM_START_IP.254\n	dns-nameservers 8.8.8.8 8.8.4.4\n	"
+		echo -e $_NETCFG
+		$_LXC config set "$2" boot.autostart true
+		# Increase an IP address counter
+		(( VM_FIRST_IP++ ))
 	done
 	echo "-------------------------------------------"
 	echo '* VM Summary'
 	echo "-------------------------------------------"
-	$_lxc list
-
+	$_LXC list
+}
 
 		put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME" "etc/plat/"
 		lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
-}
 
 get_args() {
 	getopt --test > /dev/null
