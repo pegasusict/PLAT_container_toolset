@@ -7,15 +7,15 @@
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 source ../lib/subheader.sh
 echo "$START_TIME ## Starting PostInstall Process #######################"
-### FUNCTIONS ###
+
 init() {
 	################### PROGRAM INFO ###########################################
 	declare -gr SCRIPT_TITLE="Container Build Script"
 	declare -gr VERSION_MAJOR=0
 	declare -gr VERSION_MINOR=1
-	declare -gr VERSION_PATCH=2
+	declare -gr VERSION_PATCH=3
 	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180628
+	declare -gr VERSION_BUILD=20180629
 	############################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
 	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"

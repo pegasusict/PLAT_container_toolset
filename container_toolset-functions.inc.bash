@@ -115,7 +115,7 @@ create_container() {
 	then
 		lxc launch "$_COMMAND"
 	else
-		lxc init 
+		lxc init
 	fi
 	# "$CONTAINER_DISTRIBUTION":"$CONTAINER_VERSION" "$CONTAINER_NAME"
 }
