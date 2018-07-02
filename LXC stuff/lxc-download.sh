@@ -74,25 +74,30 @@ cleanup() {
 }
 
 wget_wrapper() {
-  for _ in $(seq 3); do
-    if wget "$@"; then
+  for _ in $(seq 3)
+  do
+    if wget "$@"
+    then
       return 0
     fi
   done
-
   return 1
 }
 
 download_file() {
-  if ! wget_wrapper -T 30 -q "https://${DOWNLOAD_SERVER}/$1" -O "$2" >/dev/null 2>&1; then
-    if ! wget_wrapper -T 30 -q "http://${DOWNLOAD_SERVER}/$1" -O "$2" >/dev/null 2>&1; then
-      if [ "$3" = "noexit" ]; then
+  if ! wget_wrapper -T 30 -q "https://${DOWNLOAD_SERVER}/$1" -O "$2" >/dev/null 2>&1
+  then
+    if ! wget_wrapper -T 30 -q "http://${DOWNLOAD_SERVER}/$1" -O "$2" >/dev/null 2>&1
+    then
+      if [ "$3" = "noexit" ]
+      then
         return 1
       else
         echo "ERROR: Failed to download http://${DOWNLOAD_SERVER}/$1" 1>&2
         exit 1
       fi
-    elif [ "${DOWNLOAD_SHOW_HTTP_WARNING}" = "true" ]; then
+    elif [ "${DOWNLOAD_SHOW_HTTP_WARNING}" = "true" ]
+    then
       DOWNLOAD_SHOW_HTTP_WARNING="false"
       echo "WARNING: Failed to download the file over HTTPs" 1>&2
       echo "         The file was instead download over HTTP " 1>&2
@@ -102,9 +107,12 @@ download_file() {
 }
 
 download_sig() {
-  if ! download_file "$1" "$2" noexit; then
-    if [ "${DOWNLOAD_VALIDATE}" = "true" ]; then
-      if [ "$3" = "normal" ]; then
+  if ! download_file "$1" "$2" noexit
+  then
+    if [ "${DOWNLOAD_VALIDATE}" = "true" ]
+    then
+      if [ "$3" = "normal" ]
+      then
         echo "ERROR: Failed to download http://${DOWNLOAD_SERVER}/$1" 1>&2
         exit 1
       else
@@ -117,20 +125,18 @@ download_sig() {
 }
 
 gpg_setup() {
-  if [ "${DOWNLOAD_VALIDATE}" = "false" ]; then
+  if [ "${DOWNLOAD_VALIDATE}" = "false" ]
+  then
     return
   fi
-
-  if [ "${DOWNLOAD_READY_GPG}" = "true" ]; then
+  if [ "${DOWNLOAD_READY_GPG}" = "true" ]
+  then
     return
   fi
-
   echo "Setting up the GPG keyring"
-
   mkdir -p "${DOWNLOAD_TEMP}/gpg"
   chmod 700 "${DOWNLOAD_TEMP}/gpg"
   export GNUPGHOME="${DOWNLOAD_TEMP}/gpg"
-
   success=
   for _ in $(seq 3); do
     if gpg --keyserver "${DOWNLOAD_KEYSERVER}" \
