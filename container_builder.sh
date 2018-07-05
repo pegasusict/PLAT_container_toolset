@@ -6,16 +6,16 @@
 ############################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 source ../lib/subheader.sh
-echo "$START_TIME ## Starting PostInstall Process #######################"
+echo loading...
 ### FUNCTIONS ###
 init() {
 	################### PROGRAM INFO ##############################################
-	declare -gr SCRIPT_TITLE="Container Build Script"
+	declare -gr SCRIPT_TITLE="Container Builder"
 	declare -gr VERSION_MAJOR=0
 	declare -gr VERSION_MINOR=1
-	declare -gr VERSION_PATCH=0
+	declare -gr VERSION_PATCH=5
 	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180626
+	declare -gr VERSION_BUILD=20180705
 	###############################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
 	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
@@ -24,27 +24,30 @@ init() {
 
 prep() {
 	### VARS ###
-	declare -g CONTAINER_NAME	;	CONTAINER_NAME=""
+	declare -g CONTAINER_NAME	;	CONTAINER_NAME="container"
 	declare -Ag SYSTEM_ROLE=(
-		[BASIC]=false
-		[WS]=false
-		[SERVER]=false
-		[NAS]=false
-		[WEB]=false
-		[PXE]=false
-		[X11]=false
-		[HONEY]=false
-	)
+							[BASIC]=false
+							[WS]=false
+							[SERVER]=false
+							[NAS]=false
+							[WEB]=false
+							[PXE]=false
+							[X11]=false
+							[HONEY]=false
+							[ROUTER]=false
+							[FIREWALL]=false
+							)
 	### INCLUDES ###
 	source ../PBFL/default.inc.bash
 	### LOAD PREFS ###
-	parse_ini
+	#parse_ini
 	parse_args
 	#compile_prefs
 	#update _ini
 }
 
 main() {
+	echo "$START_TIME ## Starting $SCRIPT_TITLE Process #######################"
 	CONTAINER_NAME=$(prompt "What should the container be named?")
 	#if [ $(choose "Do you want a specific version?") ]
 	echo possible roles:
@@ -59,7 +62,7 @@ main() {
 	lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
 }
 
-get_args() {
+parse_args() {
 	getopt --test > /dev/null
 	if [[ $? -ne 4 ]]
 	then
@@ -97,7 +100,7 @@ usage() {
 		                      name may not start or end with a dash "-"
 		                      name may not start with a digit "0-9"
 		    -c or --containertype tells the script what kind of container we are working on.
-		       Valid options are: basic, nas, web, x11, pxe, basic, router, honeypot
+		       Valid options are: basic, nas, web, pxe, x11, basic, honeypot, router or firewall
 		EOT
 	exit 3
 }

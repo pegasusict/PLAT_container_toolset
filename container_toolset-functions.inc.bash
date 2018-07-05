@@ -18,12 +18,11 @@
 # LICENSE="MIT"											#
 #########################################################
 
-### Basic program #############################################################
-
 build_maintenance_script() { ###TODO### convert to template
 	local _SCRIPT=$1
 	local _SCRIPT_INI="${_SCRIPT%.*}.ini"
 	local _SCRIPT_TITLE="$CONTAINER_SCRIPT_TITLE"
+	# check for existing maintenance script
 	if [ -f "$_SCRIPT" ]
 	then
 		rm "$_SCRIPT" 2>&1 | dbg_line
@@ -76,7 +75,7 @@ build_maintenance_script() { ###TODO### convert to template
 	sed -e 1d maintenance/body-basic.sh >> "$_SCRIPT"
 }
 
-check_container() {
+check_cont_role() {
 	local _CONTAINER=$1
 	case "$_CONTAINER" in
 		"nas"		)	SYSTEM_ROLE[NAS]=true		;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=nas"		;;
@@ -86,66 +85,7 @@ check_container() {
 		"basic"		)	SYSTEM_ROLE[BASIC]=true																	;	dbg_line "container=basic"		;;
 		"router"	)	SYSTEM_ROLE[ROUTER]=true	;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=router"		;;
 		"honeypot"	)	SYSTEM_ROLE[HONEY]=true		;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=honeypot"	;;
+		"firewall"	)	SYSTEM_ROLE[FIREWALL]=true	;	SYSTEM_ROLE[SERVER]=true								;	dbg_line "container=firewall"	;;
 		*			)	crit_line "CRITICAL: Unknown containertype $_CONTAINER, exiting..."	;	exit 1	;;
 	esac;
-}
-
-check_name() {
-	local _CONTAINER_NAME="$1"
-	local _FILTERED_NAME=$(echo "$_CONTAINER_NAME" | grep -Po "^[a-zA-Z][-a-zA-Z0-9]{0,61}[a-zA-Z0-9]$")
-	if [ $_FILTERED_NAME != $_CONTAINER_NAME ]
-	then
-		cat <<-EOT
-			I'm sorry, the name you proposed is invalid, please enter a valid name:
-			    > max 63 chars: -, a-z, A-Z, 0-9
-			    > name may not start or end with a dash "-"
-			    > name may not start with a digit "0-9""
-			EOT
-	  exit 1
-	else declare -gr CONTAINER_NAME=$_CONTAINER_NAME
-}
-
-create_container() {
-	local _CONTAINER_NAME="$1"
-	local _START_CONTAINER=$2
-	local _CONTAINER_DISTRIBUTION="$3"
-	local _CONTAINER_VERSION="$4"
-	local _COMMAND=""
-	if [ "$_START_CONTAINER"=true ]
-	then
-		lxc launch "$_COMMAND"
-	else
-		lxc init
-	fi
-	# "$CONTAINER_DISTRIBUTION":"$CONTAINER_VERSION" "$CONTAINER_NAME"
-}
-
-start_container() {
-	_CONTAINER_NAME=$1
-	lxc start $_CONTAINER_NAME
-}
-
-stop_container() {
-	_CONTAINER_NAME=$1
-	lxc stop $_CONTAINER_NAME
-}
-
-list_containers() {
-	lxc list
-}
-
-run_post_install() {
-	echo nothing here yet
-}
-
-run_in_container() {
-	_COMMAND="$1"
-	_CONTAINER_NAME="$2"
-	lxc exec $_CONTAINER_NAME -- $_COMMAND | dbg_line
-}
-
-put_in_container() {
-	local _FILE="$1"
-	local _CONTAINER="$2"
-	cp "_FILE" "$LXC_ROOT$_CONTAINER"
 }
