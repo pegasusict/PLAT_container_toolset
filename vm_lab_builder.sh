@@ -102,7 +102,7 @@ build_farm() {
 }
 
 		put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME" "etc/plat/"
-		lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
+		lxc exec $CONTAINER_NAME "bash /etc/plat/bootstrap.sh -v 0 -r $CHOSEN_ROLES"
 
 get_args() {
 	getopt --test > /dev/null
