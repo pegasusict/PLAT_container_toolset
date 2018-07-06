@@ -1,13 +1,18 @@
 #!/bin/bash
 ############################################################################
-# Pegasus' Linux Administration Tools #				container build script #
+# Pegasus' Linux Administration Tools #					 Container Builder #
 # (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
 # License: MIT						  # Please keep my name in the credits #
 ############################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 source ../lib/subheader.sh
 echo loading...
-### FUNCTIONS ###
+###
+
+
+
+
+
 init() {
 	################### PROGRAM INFO ##############################################
 	declare -gr SCRIPT_TITLE="Container Builder"
@@ -20,6 +25,21 @@ init() {
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
 	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
 	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
+	############################################################################
+	declare -gr OPTIONS="hn:c:v:"
+	declare -gr LONG_OPTIONS="help,name:,containertype:,verbosity:"
+	declare -gr	USAGE=<<-EOT
+		USAGE: sudo bash container_builder.sh -v [int]
+
+		OPTIONS
+
+		    -n or --name tells the script what name the container needs to have.
+		       Valid options: max 63 chars: -, a-z, A-Z, 0-9
+		                      name may not start or end with a dash "-"
+		                      name may not start with a digit "0-9"
+		    -c or --containertype tells the script what kind of container we are working on.
+		       Valid options are: basic, nas, web, pxe, x11, basic, honeypot, router or firewall
+		EOT
 }
 
 prep() {
@@ -41,6 +61,7 @@ prep() {
 	source ../PBFL/default.inc.bash
 	### LOAD PREFS ###
 	#parse_ini
+	get_args
 	parse_args
 	#compile_prefs
 	#update _ini
@@ -61,20 +82,19 @@ main() {
 	put_in_container "/etc/plat/*" "$CONTAINER_PATH$CONTAINER_NAME" "etc/plat/"
 	lxc exec $CONTAINER_NAME "bash /etc/plat/postinstall.sh -v 0 -r $CHOSEN_ROLES"
 }
-
-parse_args() {
+get_args() {
 	getopt --test > /dev/null
 	if [[ $? -ne 4 ]]
 	then
 		err_line "I’m sorry, \"getopt --test\" failed in this environment."
 		exit 1
 	fi
-	OPTIONS="hn:c:v:"
-	LONG_OPTIONS="help,name:,containertype:,verbosity:"
-	PARSED=$(getopt -o $OPTIONS --long $LONG_OPTIONS -n "$" -- "$@")
+	declare -gr PARSED=$(getopt -o $OPTIONS --long $LONG_OPTIONS -n "$" -- "$@")
 	if [ $? -ne 0 ]
 		then usage
 	fi
+}
+parse_args() {
 	eval set -- "$PARSED"
 	while true; do
 		case "$1" in
@@ -90,18 +110,7 @@ parse_args() {
 
 usage() {
 	version
-	cat <<-EOT
-		USAGE: sudo bash container_builder.sh -v [int]
-
-		OPTIONS
-
-		    -n or --name tells the script what name the container needs to have.
-		       Valid options: max 63 chars: -, a-z, A-Z, 0-9
-		                      name may not start or end with a dash "-"
-		                      name may not start with a digit "0-9"
-		    -c or --containertype tells the script what kind of container we are working on.
-		       Valid options are: basic, nas, web, pxe, x11, basic, honeypot, router or firewall
-		EOT
+	cat $USAGE
 	exit 3
 }
 
