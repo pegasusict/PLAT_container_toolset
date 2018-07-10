@@ -1,22 +1,22 @@
 #!/bin/bash
-############################################################################
-# Pegasus' Linux Administration Tools #		 PostInstall Functions Library #
-# (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
-# License: MIT						  # Please keep my name in the credits #
-############################################################################
+################################################################################
+# Pegasus' Linux Administration Tools	#		 PostInstall Functions Library #
+# (C)2017-2018 Mattijs Snepvangers		#				 pegasus.ict@gmail.com #
+# License: MIT							#	Please keep my name in the credits #
+################################################################################
 
-#########################################################
-# PROGRAM_SUITE="Pegasus' Linux Administration Tools"	#
-# SCRIPT_TITLE="Contaienr Tool Set Functions Library"	#
-# MAINTAINER="Mattijs Snepvangers"						#
-# MAINTAINER_EMAIL="pegasus.ict@gmail.com"				#
-# VERSION_MAJOR=0										#
-# VERSION_MINOR=1										#
-# VERSION_PATCH=41										#
-# VERSION_STATE="PRE-ALPHA"								#
-# VERSION_BUILD=20180525								#
-# LICENSE="MIT"											#
-#########################################################
+################################################################################
+# PROGRAM_SUITE="Pegasus' Linux Administration Tools"
+# SCRIPT_TITLE="Contaienr Tool Set Functions Library"
+# MAINTAINER="Mattijs Snepvangers"
+# MAINTAINER_EMAIL="pegasus.ict@gmail.com"
+# VER_MAJOR=0
+# VER_MINOR=1
+# VER_PATCH=46
+# VER_STATE="PRE-ALPHA"
+# BUILD=20180710
+# LICENSE="MIT"
+################################################################################
 
 build_maintenance_script() { ###TODO### convert to template
 	local _SCRIPT=$1
@@ -30,19 +30,19 @@ build_maintenance_script() { ###TODO### convert to template
 	fi
 	add_to_script "$_SCRIPT" line "#!/usr/bin/bash"
 	make_line >> "$_SCRIPT"
-	header_line "$PROGRAM_SUITE - $_SCRIPT_TITLE" "Ver$SHORT_VERSION" >> "$_SCRIPT"
-	header_line "$COPYRIGHT $MAINTAINER" "build $VERSION_BUILD  $MAINTAINER_EMAIL" >> "$_SCRIPT"
+	header_line "$PROGRAM_SUITE - $_SCRIPT_TITLE" "Ver$SHORT_VER" >> "$_SCRIPT"
+	header_line "$COPYRIGHT $MAINTAINER" "build $BUILD  $MAINTAINER_EMAIL" >> "$_SCRIPT"
 	header_line "This maintenance script is dynamically built" "Last build: $TODAY" >> "$_SCRIPT"
 	header_line "License: $LICENSE" "Please keep my name in the credits" >> "$_SCRIPT"
 	make_line >> "$_SCRIPT"
 	sed -e 1d maintenance/maintenance-subheader1.sh >> "$_SCRIPT"
 	add_to_script "$_SCRIPT" line "PROGRAM_SUITE=\"$PROGRAM_SUITE\""
 	add_to_script "$_SCRIPT" line "SCRIPT_TITLE=\"$_SCRIPT_TITLE\""
-	add_to_script "$_SCRIPT" line "VERSION_MAJOR=$VERSION_MAJOR"
-	add_to_script "$_SCRIPT" line "VERSION_MINOR=$VERSION_MINOR"
-	add_to_script "$_SCRIPT" line "VERSION_PATCH=$VERSION_PATCH"
-	add_to_script "$_SCRIPT" line "VERSION_STATE=$VERSION_STATE"
-	add_to_script "$_SCRIPT" line "VERSION_BUILD=$VERSION_BUILD"
+	add_to_script "$_SCRIPT" line "VER_MAJOR=$VER_MAJOR"
+	add_to_script "$_SCRIPT" line "VER_MINOR=$VER_MINOR"
+	add_to_script "$_SCRIPT" line "VER_PATCH=$VER_PATCH"
+	add_to_script "$_SCRIPT" line "VER_STATE=$VER_STATE"
+	add_to_script "$_SCRIPT" line "BUILD=$BUILD"
 	add_to_script "$_SCRIPT" line "MAINTAINER=\"$MAINTAINER\""
 	add_to_script "$_SCRIPT" line "MAINTAINER_EMAIL=\"$MAINTAINER_EMAIL\""
 	make_line >> "$_SCRIPT"
@@ -60,8 +60,8 @@ build_maintenance_script() { ###TODO### convert to template
 
 	add_to_script "$_SCRIPT" line "verb_line <<EOH"
 	make_line >> "$_SCRIPT"
-	header_line "$PROGRAM_SUITE - $_SCRIPT_TITLE" "Ver$SHORT_VERSION" >> "$_SCRIPT"
-	header_line "$COPYRIGHT $MAINTAINER" "build $VERSION_BUILD  $MAINTAINER_EMAIL" >> "$_SCRIPT"
+	header_line "$PROGRAM_SUITE - $_SCRIPT_TITLE" "Ver$SHORT_VER" >> "$_SCRIPT"
+	header_line "$COPYRIGHT $MAINTAINER" "build $BUILD  $MAINTAINER_EMAIL" >> "$_SCRIPT"
 	header_line "This maintenance script is dynamically built" "Last build: $TODAY" >> "$_SCRIPT"
 	header_line "License: $LICENSE" "Please keep my name in the credits" >> "$_SCRIPT"
 	make_line >> "$_SCRIPT"

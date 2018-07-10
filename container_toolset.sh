@@ -1,9 +1,9 @@
 #!/bin/bash
-############################################################################
-# Pegasus' Linux Administration Tools #					Container Tool Set #
-# (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
-# License: MIT						  # Please keep my name in the credits #
-############################################################################
+################################################################################
+# Pegasus' Linux Administration Tools	#					Container Tool Set #
+# (C)2017-2018 Mattijs Snepvangers		#				 pegasus.ict@gmail.com #
+# License: MIT							#	Please keep my name in the credits #
+################################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 # Making sure this script is run by bash to prevent mishaps
 if [ "$(ps -p "$$" -o comm=)" != "bash" ]; then bash "$0" "$@" ; exit "$?" ; fi
@@ -13,23 +13,23 @@ echo "$START_TIME ## Starting Container Tool Set Process #######################
 
 ### FUNCTIONS ###
 init() {
-	################### PROGRAM INFO ##########################################
+	################### PROGRAM INFO ###########################################
 	declare -gr PROGRAM_SUITE="Pegasus' Linux Administration Tools"
 	declare -gr SCRIPT="${0##*/}" ###CHECK###
 	declare -gr SCRIPT_TITLE="Container Tool Set"
 	declare -gr MAINTAINER="Mattijs Snepvangers"
 	declare -gr MAINTAINER_EMAIL="pegasus.ict@gmail.com"
 	declare -gr COPYRIGHT="(c)2017-$(date +"%Y")"
-	declare -gr VERSION_MAJOR=0
-	declare -gr VERSION_MINOR=0
-	declare -gr VERSION_PATCH=27
-	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180419
+	declare -gr VER_MAJOR=0
+	declare -gr VER_MINOR=0
+	declare -gr VER_PATCH=32
+	declare -gr VER_STATE="PRE-ALPHA"
+	declare -gr BUILD=20180710
 	declare -gr LICENSE="MIT"
-	###########################################################################
+	############################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
-	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
-	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
+	declare -gr SHORT_VER="$VER_MAJOR.$VER_MINOR.$VER_PATCH-$VER_STATE"
+	declare -gr VER="Ver$SHORT_VER build $BUILD"
 
 }
 
@@ -43,8 +43,6 @@ prep() {
 		[PXE]=false
 		[X11]=false
 	)
-
-
 ###
 	get_args
 }

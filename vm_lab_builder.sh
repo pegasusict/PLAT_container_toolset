@@ -1,9 +1,9 @@
 #!/bin/bash
-############################################################################
-# Pegasus' Linux Administration Tools #				container build script #
-# (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
-# License: MIT						  # Please keep my name in the credits #
-############################################################################
+################################################################################
+# Pegasus' Linux Administration Tools	#				container build script #
+# (C)2017-2018 Mattijs Snepvangers		#				 pegasus.ict@gmail.com #
+# License: MIT							# Please keep my name in the credits #
+################################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 source ../lib/subheader.sh
 echo "$START_TIME ## Starting PostInstall Process #######################"
@@ -11,15 +11,15 @@ echo "$START_TIME ## Starting PostInstall Process #######################"
 init() {
 	################### PROGRAM INFO ###########################################
 	declare -gr SCRIPT_TITLE="Container Build Script"
-	declare -gr VERSION_MAJOR=0
-	declare -gr VERSION_MINOR=1
-	declare -gr VERSION_PATCH=3
-	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180629
-	############################################################################
+	declare -gr VER_MAJOR=0
+	declare -gr VER_MINOR=1
+	declare -gr VER_PATCH=3
+	declare -gr VER_STATE="PRE-ALPHA"
+	declare -gr BUILD=20180629
+	###################################################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
-	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
-	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
+	declare -gr SHORT_VER="$VER_MAJOR.$VER_MINOR.$VER_PATCH-$VER_STATE"
+	declare -gr VER="Ver$SHORT_VER build $BUILD"
 }
 
 prep() {
@@ -63,13 +63,13 @@ build_farm() {
 	local _NETCFG
 	## Customize this ##
 	## Format:
-	## VM_OS/VM_VERSION/VM_ARCH|VM-NAME
+	## VM_OS/VM_VER/VM_ARCH|VM-NAME
 	local _VM_OS		;	_VM_OS=ubuntu
-	local _VM_VERSION	;	_VM_VERSION=bionic
-	local -a _VM_NAMES=("$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|theo,
-						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|dominique,
-						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|stefan,
-						"$_VM_OS"/"$_VM_VERSION"/"$_VM_ARCH"|roelof)
+	local _VM_VER	;	_VM_VER=bionic
+	local -a _VM_NAMES=("$_VM_OS"/"$_VM_VER"/"$_VM_ARCH"|theo,
+						"$_VM_OS"/"$_VM_VER"/"$_VM_ARCH"|dominique,
+						"$_VM_OS"/"$_VM_VER"/"$_VM_ARCH"|stefan,
+						"$_VM_OS"/"$_VM_VER"/"$_VM_ARCH"|roelof)
 
 	echo "Setting up LXD based VM lab...Please wait..."
 	for v in $vm_names

@@ -676,9 +676,9 @@ do_bindhome() {
 	echo "lxc.mount.entry = $h $h2 none bind 0 0" >> $path/config
 
 	# Make sure the group exists in container
-	grp=`echo $pwd | cut -d: -f 4`  # group number for $user
+	grp=`echo $pwd | cut -d: -f 4`	# group number for $user
 	grpe=`getent group $grp` || \
-	return 0  # if host doesn't define grp, ignore in container
+	return 0	# if host doesn't define grp, ignore in container
 	chroot $rootfs getent group "$grpe" || echo "$grpe" >> $rootfs/etc/group
 }
 

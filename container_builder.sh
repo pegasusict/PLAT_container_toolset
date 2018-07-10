@@ -1,30 +1,26 @@
 #!/bin/bash
-############################################################################
-# Pegasus' Linux Administration Tools #					 Container Builder #
-# (C)2017-2018 Mattijs Snepvangers	  #				 pegasus.ict@gmail.com #
-# License: MIT						  # Please keep my name in the credits #
-############################################################################
+################################################################################
+# Pegasus' Linux Administration Tools	#					 Container Builder #
+# (C)2017-2018 Mattijs Snepvangers		#				 pegasus.ict@gmail.com #
+# License: MIT							#	Please keep my name in the credits #
+################################################################################
 START_TIME=$(date +"%Y-%m-%d_%H.%M.%S.%3N")
 source ../lib/subheader.sh
 echo loading...
 ###
 
-
-
-
-
 init() {
-	################### PROGRAM INFO ##############################################
+	################### PROGRAM INFO ###########################################
 	declare -gr SCRIPT_TITLE="Container Builder"
-	declare -gr VERSION_MAJOR=0
-	declare -gr VERSION_MINOR=1
-	declare -gr VERSION_PATCH=5
-	declare -gr VERSION_STATE="PRE-ALPHA"
-	declare -gr VERSION_BUILD=20180705
-	###############################################################################
+	declare -gr VER_MAJOR=0
+	declare -gr VER_MINOR=1
+	declare -gr VER_PATCH=10
+	declare -gr VER_STATE="PRE-ALPHA"
+	declare -gr BUILD=20180710
+	############################################################################
 	declare -gr PROGRAM="$PROGRAM_SUITE - $SCRIPT_TITLE"
-	declare -gr SHORT_VERSION="$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_STATE"
-	declare -gr VERSION="Ver$SHORT_VERSION build $VERSION_BUILD"
+	declare -gr SHORT_VER="$VER_MAJOR.$VER_MINOR.$VER_PATCH-$VER_STATE"
+	declare -gr VER="Ver$SHORT_VER build $BUILD"
 	############################################################################
 	declare -gr OPTIONS="hn:c:v:"
 	declare -gr LONG_OPTIONS="help,name:,containertype:,verbosity:"
