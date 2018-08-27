@@ -92,6 +92,7 @@ prep() {
 # use: lxc_install
 # api: LXC Installer
 lxc_install() {
+
 	add_ppa_key "aar" "ppa:juju/stable"
 	apt_update
 	apt_inst_with_recs lxc lxd lxd-tools juju juju-deployer criu ctop lxctl lxctemplates nova-compute-lxd
@@ -108,14 +109,6 @@ lxc_setup() {
 	lxc config set images.remote_cache_expiry "${LXC_IMG_SRV[IMG_CACHE_DAYS]}"
 	lxc config set images.auto_update_interval "${LXC_IMG_SRV[IMG_UPDATE_HRS]}"
 	lxc config set images.auto_update_cached true
-
-
-
-
-
-
-
-
 }
 
 
