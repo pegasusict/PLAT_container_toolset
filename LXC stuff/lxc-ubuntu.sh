@@ -711,7 +711,7 @@ then
 fi
 eval set -- "$options"
 
-release=bionic # Default to the last Ubuntu LTS release for non-Ubuntu systems
+release=jammy # Default to the last Ubuntu LTS release for non-Ubuntu systems
 if [ -f /etc/lsb-release ]
 then
 	source /etc/lsb-release

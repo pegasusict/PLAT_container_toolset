@@ -52,26 +52,17 @@ init() {
 # use: config
 # api: prerun
 config() {
-	declare -Ag LXC_CFG=(
-		[]=""
-	)
+	declare -Ag LXC_CFG
 	declare -Ag LXC_IMG_SRV=(
-		[IMG_CACHE_DAYS]=30
-		[IMG_UPDATE_HRS]=24
+		['IMG_CACHE_DAYS']=30
+		['IMG_UPDATE_HRS']=24
 	)
 	declare -Ag LXD_CFG=(
-		[HTTPS_ADDR]="[::]"
-		[TRUST_PASS]="some-secret-string"
+		['HTTPS_ADDR']="[::]"
+		['TRUST_PASS']="some-secret-string"
 	)
 
 }
-
-
-
-
-
-
-
 
 # fun: prep
 # txt: prep initializes default settings, imports the PBFL index and makes
@@ -92,7 +83,6 @@ prep() {
 # use: lxc_install
 # api: LXC Installer
 lxc_install() {
-
 	add_ppa_key "aar" "ppa:juju/stable"
 	apt_update
 	apt_inst_with_recs lxc lxd lxd-tools juju juju-deployer criu ctop lxctl lxctemplates nova-compute-lxd
@@ -104,14 +94,12 @@ lxc_install() {
 # api: LXC Installer
 lxc_setup() {
 	lxd init
-	lxc config set core.https_address "${LXD_CFG[HTTPS_ADDR]}"
-	lxc config set core.trust_password "${LXD_CFG[TRUST_PASS]}"
-	lxc config set images.remote_cache_expiry "${LXC_IMG_SRV[IMG_CACHE_DAYS]}"
-	lxc config set images.auto_update_interval "${LXC_IMG_SRV[IMG_UPDATE_HRS]}"
+	lxc config set core.https_address "${LXD_CFG['HTTPS_ADDR']}"
+	lxc config set core.trust_password "${LXD_CFG['TRUST_PASS']}"
+	lxc config set images.remote_cache_expiry "${LXC_IMG_SRV['IMG_CACHE_DAYS']}"
+	lxc config set images.auto_update_interval "${LXC_IMG_SRV['IMG_UPDATE_HRS']}"
 	lxc config set images.auto_update_cached true
 }
-
-
 
 ##### BOILERPLATE #####
 init
